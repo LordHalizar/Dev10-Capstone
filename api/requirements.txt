@@ -1,0 +1,5 @@
+Flask
+pandas
+pendulum
+requests
+apache-airflow-providers-postgres
