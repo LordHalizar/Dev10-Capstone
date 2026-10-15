@@ -11,18 +11,18 @@ Use the checkboxes to track progress. Add an estimate to each task, then record 
 
 ### 1. Project definition and planning
 
-- [ ] Create a GitHub repository for project code and deliverables.
-- [ ] Define the topic, problem, and audience.
-- [ ] Write 5–10 questions the project aims to answer.
-- [ ] Get peer feedback on the questions and project idea.
-- [ ] Discuss peer ideas for possible machine-learning applications.
-- [ ] Select a project-management method and track tasks, estimates, and completion dates.
+- [x] Create a GitHub repository for project code and deliverables.
+- [x] Define the topic, problem, and audience.
+- [x] Write 5–10 questions the project aims to answer.
+- [x] Get peer feedback on the questions and project idea.
+- [x] Discuss peer ideas for possible machine-learning applications.
+- [x] Select a project-management method and track tasks, estimates, and completion dates.
 
 ### 2. Data selection and sourcing
 
-- [ ] Select one or two primary datasets, each with at least 1,000 records.
-- [ ] Select at least one supplementary dataset in CSV or another suitable format (for example, Parquet or an API).
-- [ ] Confirm that datasets are structured and appropriate for a professional project.
+- [x] Select one or two primary datasets, each with at least 1,000 records.
+- [x] Select at least one supplementary dataset in CSV or another suitable format (for example, Parquet or an API).
+- [x] Confirm that datasets are structured and appropriate for a professional project.
 - [ ] Record each dataset's source, access date, format, and approximate record count.
 - [ ] Add APA-format citations for all datasets.
 - [ ] Check data access, usage, and sharing restrictions.
