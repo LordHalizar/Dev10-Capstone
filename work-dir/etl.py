@@ -278,7 +278,7 @@ class GameETLProcessor(BaseETLProcessor):
                     .drop(join_key)
                 )
 
-            final_df = combined_df.dropDuplicates(subset=['game_title', 'release_year', 'genre_id', 'publisher_id'])
+            final_df = combined_df.dropDuplicates()
 
             print(f"Loading {table} table data...")
             self.load(df=final_df, spark=spark, table=table)

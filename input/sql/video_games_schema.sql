@@ -23,8 +23,8 @@ create table game (
 	foreign key(publisher_id)
 		references publisher(publisher_id),
 		
-	constraint uq_title_genre_publisher
-		unique (game_title, genre_id, publisher_id)
+	constraint uq_title_year_genre_publisher
+		unique (game_title, release_year, genre_id, publisher_id)
 );
 
 create table platform (
