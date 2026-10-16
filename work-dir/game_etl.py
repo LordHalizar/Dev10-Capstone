@@ -13,14 +13,12 @@ DF_COLUMN_MAPPING = {
 LOOKUP_MAPPING = [
     {
         'table': 'genre',
-        'source_key': 'genre_name',
-        'lookup_key': 'genre_name',
+        'join_key': 'genre_name',
         'foreign_key': 'genre_id'
     },
     {
         'table': 'publisher',
-        'source_key': 'publisher_name',
-        'lookup_key': 'publisher_name',
+        'join_key': 'publisher_name',
         'foreign_key': 'publisher_id'
     }
 ]

@@ -200,11 +200,11 @@ class GameETLProcessor(BaseETLProcessor):
             print(f"[ERR] An error occurred when attempting to convert release_value: {e}")
             raise
 
-        return df
+        return df.drop()
     
-    def transform_foreign_keys(self, df: sp.DataFrame, lookup_key: str, foreign_key: str) -> sp.DataFrame:
+    def transform_foreign_keys(self, df: sp.DataFrame, join_key: str, foreign_key: str) -> sp.DataFrame:
 
-        columns = [lookup_key, foreign_key]
+        columns = [join_key, foreign_key]
         missing = [column for column in columns if column not in df.columns]
 
         if missing:
@@ -256,7 +256,7 @@ class GameETLProcessor(BaseETLProcessor):
 
                 combined_df = combined_df.unionByName(df)
 
-            combined_df = combined_df.drop_duplicates().dropna(how='any')
+            combined_df = combined_df.dropDuplicates(self.db_columns).dropna(how='any')
 
             for config in self.lookups:
                 lookup_df = self.extract_foreign_keys(
@@ -264,29 +264,21 @@ class GameETLProcessor(BaseETLProcessor):
                     spark=spark
                 )
 
-                source_key = config['source_key']
-                lookup_key = config['lookup_key']
+                join_key = config['join_key']
                 foreign_key = config['foreign_key']
-                lookup_key_join = f"__lookup_{lookup_key}"
 
-                lookup = (
-                    lookup_df
-                    .select(lookup_key, foreign_key,)
-                    .withColumnRenamed(lookup_key, lookup_key_join)
-                )
+                lookup = (lookup_df.select(join_key, foreign_key))
 
                 combined_df = (
-                    combined_df
-                    .join(
-                        lookup,
-                        combined_df[source_key] == lookup[lookup_key_join],
-                        'left'
+                    combined_df.join(
+                        lookup, 
+                        on=join_key, 
+                        how='inner'
                     )
-                    .drop(lookup_key_join)
-                    .drop(source_key)
+                    .drop(join_key)
                 )
-            
-            final_df = combined_df.dropDuplicates().dropna(how='any')
+
+            final_df = combined_df.dropDuplicates(subset=['game_title', 'release_year', 'genre_id', 'publisher_id'])
 
             print(f"Loading {table} table data...")
             self.load(df=final_df, spark=spark, table=table)
