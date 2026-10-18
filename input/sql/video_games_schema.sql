@@ -51,8 +51,8 @@ create table sales (
 	na_sales numeric(6,2) not null,
 	jp_sales numeric(6,2) not null,
 	foreign key(game_platform_id)
-		references game_platform(game_platform_id),
+		references game_platform(game_platform_id)--,
 		
-	constraint uq_game_platform_sales
-		unique (game_platform_id)
+	--constraint uq_game_platform_sales
+		--unique (game_platform_id)
 );

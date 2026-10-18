@@ -1,4 +1,5 @@
-from etl import PublisherETLProcessor
+import pyspark.sql as sp
+from etl import ETProcessor, PublisherTLProcessor
 
 CSV_FILE_PATH = "/opt/spark/files/in/csv/Video_Games.csv"
 EXCEL_FILE_PATH = "/opt/spark/files/in/excel/VideoGames_Sales.xlsx"
@@ -6,9 +7,19 @@ EXCEL_FILE_PATH = "/opt/spark/files/in/excel/VideoGames_Sales.xlsx"
 FILE_PATHS = [CSV_FILE_PATH, EXCEL_FILE_PATH]
 
 DF_COLUMN_MAPPING = {
-    CSV_FILE_PATH: ['Publisher'],
-    EXCEL_FILE_PATH: ['publisher']
+    CSV_FILE_PATH: ['Name', 'Platform', 'Year_of_Release', 'Genre', 'Publisher', 'NA_Sales', 'JP_Sales'],
+    EXCEL_FILE_PATH: ['title', 'console', 'release_date', 'genre', 'publisher', 'na_sales(mil)', 'jp_sales(mil)']
 }
 
-publisher_etl = PublisherETLProcessor(file_paths=FILE_PATHS, df_column_mapping=DF_COLUMN_MAPPING, db_columns=['publisher_name'])
+DB_COLUMNS = ['game_title', 'platform_name', 'release_year', 'genre_name', 'publisher_name', 'na_sales', 'jp_sales']
+
+UNIQUE_RECORD_KEYS = ['game_title', 'platform_name', 'publisher_name']
+
+spark = sp.SparkSession.builder.appName('GenreETL').getOrCreate()
+
+source_process = ETProcessor(file_paths=FILE_PATHS, df_column_mapping=DF_COLUMN_MAPPING, db_columns=DB_COLUMNS, spark=spark, unique_records_keys=UNIQUE_RECORD_KEYS)
+source_df = source_process.process()
+publisher_etl = PublisherTLProcessor(source_df=source_df, db_columns=['publisher_name'], spark=spark)
 publisher_etl.process(table='publisher')
+
+spark.stop()
