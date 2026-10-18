@@ -32,6 +32,18 @@ def http_postgres_data_insert():
         sql=execute_video_games_schema(),
     )
         
+    # data = {"app": "process_etl.py"}
+    # logger.info(f"Submitting ETL job with data: {data}")
+    # http_etl_task = HttpOperator(
+    #     task_id="http_etl_task",
+    #     http_conn_id="http_spark",
+    #     method="POST",
+    #     headers={"Content-Type": "application/json"},
+    #     endpoint="/submit",
+    #     data=json.dumps(data),
+    # )
+    # logger.info("ETL job submitted successfully")
+
     data = {"app": "genre_etl.py"}
     logger.info(f"Submitting ETL job with data: {data}")
     http_genre_task = HttpOperator(
