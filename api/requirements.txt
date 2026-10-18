@@ -1,5 +1,6 @@
 Flask
 pandas
+openpyxl
 pendulum
 requests
 apache-airflow-providers-postgres

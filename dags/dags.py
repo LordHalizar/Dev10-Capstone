@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
     schedule=None,
     start_date=pendulum.datetime(2026, 1, 1, tz="UTC"),
     catchup=False,
-    tags=["example"],
+    tags=["postgres"],
 )
 def http_postgres_data_insert():
     def execute_video_games_schema():
@@ -32,22 +32,10 @@ def http_postgres_data_insert():
         sql=execute_video_games_schema(),
     )
         
-    # data = {"app": "process_etl.py"}
-    # logger.info(f"Submitting ETL job with data: {data}")
-    # http_etl_task = HttpOperator(
-    #     task_id="http_etl_task",
-    #     http_conn_id="http_spark",
-    #     method="POST",
-    #     headers={"Content-Type": "application/json"},
-    #     endpoint="/submit",
-    #     data=json.dumps(data),
-    # )
-    # logger.info("ETL job submitted successfully")
-
-    data = {"app": "genre_etl.py"}
+    data = {"app": "process_etl.py"}
     logger.info(f"Submitting ETL job with data: {data}")
-    http_genre_task = HttpOperator(
-        task_id="http_genre_task",
+    http_etl_task = HttpOperator(
+        task_id="http_etl_task",
         http_conn_id="http_spark",
         method="POST",
         headers={"Content-Type": "application/json"},
@@ -57,5 +45,5 @@ def http_postgres_data_insert():
     logger.info("ETL job submitted successfully")
 
 
-    sql_schema_task >> http_genre_task
+    sql_schema_task >> http_etl_task
 http_postgres_data_insert()
