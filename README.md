@@ -115,3 +115,9 @@ Track implementation tasks in [DevelopmentPlan.md](./DevelopmentPlan.md).
 ## Acknowledgments
 
 [Credit collaborators, instructors, and data providers as appropriate.]
+
+Verma, P. (2025, November 11). Video games sales. Kaggledatasets. https://www.kaggle.com/datasets/lamskdna/video-games-sales
+
+Video game sales with ratings. (n.d.). Www.Kaggle.Com. Retrieved October 17, 2026, from https://www.kaggle.com/datasets/rush4ratio/video-game-sales-with-ratings/data
+
+Free sample dataset download - video game sales - maven analytics | build data skills, faster. (2024). Mavenanalytics.Io. https://mavenanalytics.io/data-playground/video-game-sales
