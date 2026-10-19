@@ -30,6 +30,9 @@ def http_postgres_data_insert():
         task_id='execute_video_games_schema',
         conn_id='pg_conn',
         sql=execute_video_games_schema(),
+        hook_params={
+            "options": "-c search_path=video_games"
+        }
     )
         
     data = {"app": "process_etl.py"}

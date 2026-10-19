@@ -14,6 +14,9 @@ services:
       - ./dags:/opt/airflow/dags
       - ./work-dir:/opt/spark/work-dir
       - ./input:/opt/spark/files/in
+    environment:
+      AIRFLOW_CONN_HTTP_SPARK: "http://api:5000/http"
+      AIRFLOW_CONN_PG_CONN: "postgres://${DB_USER}:${DB_PASSWORD}@host.docker.internal:5432/${DB_DATABASE}"
 
   leader:
     build: ./leader
