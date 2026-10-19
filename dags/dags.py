@@ -33,6 +33,7 @@ def http_postgres_data_insert():
     )
         
     data = {"app": "process_etl.py"}
+    print(f"Submitting ETL job with data: {data}")
     logger.info(f"Submitting ETL job with data: {data}")
     http_etl_task = HttpOperator(
         task_id="http_etl_task",
