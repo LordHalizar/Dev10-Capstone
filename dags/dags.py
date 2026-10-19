@@ -1,13 +1,12 @@
+import json
 import logging
 import os
 
-import json
-
 import pendulum
-from airflow.providers.http.operators.http import HttpOperator
-from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.decorators import dag, task
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.http.operators.http import HttpOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 os.chdir(os.path.dirname(__file__))
 
