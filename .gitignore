@@ -135,6 +135,7 @@ venv.bak/
 /input/csv
 /input/excel
 /output
+/scripts
 
 # Spyder project settings
 .spyderproject
