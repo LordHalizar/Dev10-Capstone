@@ -132,8 +132,9 @@ env.bak/
 venv.bak/
 
 # Data files
-/data/csv
-/data/excel
+/input/csv
+/input/excel
+/output
 
 # Spyder project settings
 .spyderproject

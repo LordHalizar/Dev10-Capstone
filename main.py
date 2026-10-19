@@ -3,7 +3,7 @@ import pandas as pd
 
 os.chdir(os.path.dirname(__file__))
 
-xl_df = pd.read_excel(r'data\excel\VideoGames_Sales.xlsx')
+xl_df = pd.read_excel(r'input\excel\VideoGames_Sales.xlsx')
 
 xl_df = xl_df.drop(columns=['developer', 'critic_score', 'total_sales(mil)', 'pal_sales(mil)', 'other_sales(mil)'])
 xl_df['release_date'] = xl_df['release_date'].dt.year
@@ -15,7 +15,7 @@ xl_year_counts = xl_df['release_year'].sort_values().value_counts()
 print(xl_year_counts)
 print()
 
-csv_df = pd.read_csv(r'data\csv\Video_Games.csv')
+csv_df = pd.read_csv(r'input\csv\Video_Games.csv')
 csv_df = csv_df.drop(columns=['Developer', 'User_Count', 'User_Score', 'Critic_Count', 'Critic_Score', 'index', 'EU_Sales', 'Other_Sales', 'Global_Sales', 'Rating'])
 csv_df = csv_df.dropna()
 print("csv data: \n")
