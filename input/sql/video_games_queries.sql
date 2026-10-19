@@ -39,7 +39,10 @@ from game_platform gp
 join game ga on ga.game_id = gp.game_id
 join genre ge on ge.genre_id = ga.genre_id
 join platform pl on pl.platform_id = gp.platform_id
+group by ga.game_title, pl.platform_name, ge.genre_name, ga.release_year
 order by ga.game_title, pl.platform_name;
 
 -- sales queries
 select * from sales;
+
+show config_file;

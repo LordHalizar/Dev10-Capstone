@@ -30,15 +30,15 @@ Use the checkboxes to track progress. Add an estimate to each task, then record 
 ### 3. Exploration, design, and ETL
 
 - [ ] Perform exploratory data analysis (EDA) on each dataset.
-- [ ] Record raw dataset shapes, useful attributes, and data types.
+- [x] Record raw dataset shapes, useful attributes, and data types.
 - [ ] Identify missing values, inconsistencies, duplicate records, and other quality issues.
-- [ ] Document where and how data will be imported and cleaned (for example, Python/Pandas or PySpark in a notebook or Airflow task).
-- [ ] Define how records will be matched, deduplicated, merged, or joined across datasets.
-- [ ] Design the database schema and create an ERD and DDL.
-- [ ] Select and document database and any other data storage.
+- [x] Document where and how data will be imported and cleaned (for example, Python/Pandas or PySpark in a notebook or Airflow task).
+- [x] Define how records will be matched, deduplicated, merged, or joined across datasets.
+- [x] Design the database schema and create an ERD and DDL.
+- [x] Select and document database and any other data storage.
 - [ ] Implement and document the ETL process from source through transformed data.
-- [ ] Add appropriate checks to verify transformed data and joins.
-- [ ] Create Airflow DAGs to orchestrate the pipeline.
+- [x] Add appropriate checks to verify transformed data and joins.
+- [x] Create Airflow DAGs to orchestrate the pipeline.
 - [ ] Create a dataflow diagram that identifies sources, processing, Airflow, and storage.
 - [ ] Create visualizations that help explain the data and analysis.
 
