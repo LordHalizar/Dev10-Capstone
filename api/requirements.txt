@@ -1,6 +1,11 @@
-Flask
-pandas
-openpyxl
-pendulum
-requests
 apache-airflow-providers-postgres
+callbacks
+dash
+dynaconf
+Flask
+openpyxl
+pandas
+pendulum
+plotly
+requests
+sqlalchemy
