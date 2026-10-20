@@ -5,3 +5,4 @@ pandas
 plotly
 openpyxl
 sqlalchemy
+psycopg[binary]

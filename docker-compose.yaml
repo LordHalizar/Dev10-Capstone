@@ -1,4 +1,4 @@
-name: video-games-etl
+name: video-games-container
 
 services:
   airflow:
@@ -17,6 +17,17 @@ services:
     environment:
       AIRFLOW_CONN_HTTP_SPARK: "http://api:5000/http"
       AIRFLOW_CONN_PG_CONN: "postgres://${DB_USER}:${DB_PASSWORD}@host.docker.internal:5432/${DB_DATABASE}"
+
+  dash:
+    build: ./dash
+    container_name: dash
+    environment:
+      DB_ENGINE_URL: "postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@${DASH_DB_HOST}:${DB_PORT}/${DB_DATABASE}?options=-c%20search_path=${DB_SCHEMA}"
+    ports:
+      - "8050:8050"
+    restart: unless-stopped
+    networks:
+      - spark-network
 
   leader:
     build: ./leader

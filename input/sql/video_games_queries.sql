@@ -93,6 +93,43 @@ group by
 	s.jp_sales
 order by ga.game_title, pl.platform_name;
 
+
+-- query for dash app
+with game_genres as (
+	select 
+		gg.game_id,
+		string_agg(distinct g.genre_name, ', ' order by g.genre_name) as genres
+	from game_genre gg
+	join genre g on g.genre_id = gg.genre_id
+	group by gg.game_id
+),
+game_publishers as (
+	select
+		gp.game_id,
+		string_agg(distinct p.publisher_name, ', ' order by p.publisher_name) as publishers
+	from game_publisher gp
+	join publisher p on p.publisher_id = gp.publisher_id
+	group by gp.game_id
+)
+select 
+	ga.game_title,
+	r.release_year,
+	gg.genres,
+	gp.publishers,
+	pl.platform_name,
+	s.na_sales,
+	s.jp_sales
+from game_platform_release r
+join game_platform gpl on gpl.game_platform_id = r.game_platform_id
+join game ga on ga.game_id = gpl.game_id
+join game_genres gg on gg.game_id = ga.game_id
+join game_publishers gp on gp.game_id = ga.game_id
+join platform pl on pl.platform_id = gpl.platform_id
+join sales s on s.game_platform_release_id = r.game_platform_release_id
+order by r.release_year, ga.game_title, pl.platform_name;
+
+	
+
 with multi_year_titles as (
     select
         ga.game_title,
