@@ -53,7 +53,11 @@ REPLACE_MAPPING = {
     }
 }
 
+INT_RANGE_MAPPING = {
+    'release_year': {'lower_range': 1980, 'upper_range': 2010}
+}
+
 def et_process(spark: sp.SparkSession):
-    source_process = ETProcessor(file_paths=FILE_PATHS, df_column_mapping=DF_COLUMN_MAPPING, db_columns=DB_COLUMNS, spark=spark, unique_records_keys=UNIQUE_RECORD_KEYS, suffix_filter_mapping=SUFFIX_FILTER_MAPPING, replace_filter_mapping=REPLACE_MAPPING)
+    source_process = ETProcessor(file_paths=FILE_PATHS, df_column_mapping=DF_COLUMN_MAPPING, db_columns=DB_COLUMNS, spark=spark, unique_records_keys=UNIQUE_RECORD_KEYS, suffix_filter_mapping=SUFFIX_FILTER_MAPPING, replace_filter_mapping=REPLACE_MAPPING, int_range_mapping=INT_RANGE_MAPPING)
     source_df = source_process.process()
     return source_df

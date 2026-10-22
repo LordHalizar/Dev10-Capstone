@@ -19,13 +19,14 @@ from pyspark.sql.types import (
 
 
 class ETProcessor:
-    def __init__(self, file_paths: list[str], df_column_mapping: dict[str, list[str]], db_columns: list[str], spark: sp.SparkSession, unique_records_keys: list[str] | None = None, suffix_filter_mapping: dict[str, list[str]] | None = None, replace_filter_mapping: dict[str, dict[str, str]] | None = None):
+    def __init__(self, file_paths: list[str], df_column_mapping: dict[str, list[str]], db_columns: list[str], spark: sp.SparkSession, unique_records_keys: list[str] | None = None, suffix_filter_mapping: dict[str, list[str]] | None = None, replace_filter_mapping: dict[str, dict[str, str]] | None = None, int_range_mapping: dict[str, dict[str, int]] | None = None):
         self.file_paths = file_paths
         self.df_column_mapping = df_column_mapping
         self.db_columns = db_columns
         self.unique_records_keys = unique_records_keys
         self.suffix_filter_mapping = suffix_filter_mapping
         self.replace_filter_mapping = replace_filter_mapping
+        self.int_range_mapping = int_range_mapping
         self.spark = spark
 
     def matching_dataframe_datatypes(self, df1: sp.DataFrame, df2: sp.DataFrame) -> bool:
@@ -54,6 +55,19 @@ class ETProcessor:
 
     def is_string(self, df: sp.DataFrame, column: str) -> bool:
         return isinstance(self.get_spark_datatype(df=df, column=column), StringType)
+
+    def apply_int_range_filter(self, df: sp.DataFrame):
+        for column, bounds in self.int_range_mapping.items():
+            lower = bounds['lower_range']
+            upper = bounds['upper_range']
+
+            if lower > upper:
+                raise ValueError(f"Lower range exceeds upper range for {column}")
+
+            df = df.filter(
+                (col(column) >= lower) & (col(column) <= upper)
+            )
+        return df
 
     def convert_release_year(self, df: sp.DataFrame, year_column: str):
         if self.is_int(df=df, column=year_column):
@@ -125,6 +139,12 @@ class ETProcessor:
                 print(f"[ERR] An error occurred when attempting to convert release_year: {e}")
                 raise
 
+        if self.int_range_mapping is not None:
+            print("Performing range filtering...")
+            filtered_columns = list(self.int_range_mapping.keys())
+            self._validate_columns(df=df, required_columns=filtered_columns, context="Integer range dataframe")
+            df = self.apply_int_range_filter(df=df)
+            
         keys = self.unique_records_keys or self.db_columns
         self._validate_columns(df=df, required_columns=keys, context="Uniqueness-key")
 

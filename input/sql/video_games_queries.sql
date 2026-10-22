@@ -65,7 +65,7 @@ group by
 	pl.platform_name,
 	s.na_sales,
 	s.jp_sales
-order by gaplr.release_year, ga.game_title, pl.platform_name;
+order by gaplr.release_year desc, ga.game_title, pl.platform_name;
 
 select
 	ga.game_title,

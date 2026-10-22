@@ -55,20 +55,21 @@ app = Dash(__name__, suppress_callback_exceptions=False)
 
 app.layout = html.Div([
     dcc.Loading(
-        html.Div([
+        children=html.Div([
             dcc.Tabs(
                 id='tabs',
                 value='tab-home',
+                className='app-tabs',
                 children=[
-                    dcc.Tab(label='Home', value='tab-home'),
-                    dcc.Tab(label='Presentation', value='tab-presentation'),
-                    dcc.Tab(label='Data Table', value='tab-data'),
-                    dcc.Tab(label='Graphs', value='tab-graphs'),
-                    dcc.Tab(label='Animated Graphs', value='tab-animated'),
-                    dcc.Tab(label='Resources & Citations', value='tab-resources'),
+                    dcc.Tab(label='⌂ Home', value='tab-home', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='♙ Presentation', value='tab-presentation', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='◇ Data Table', value='tab-data', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▥ Graphs', value='tab-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='◉ Animated Graphs', value='tab-animated', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='⚒ Resources & Citations', value='tab-resources', className='app-tab', selected_className='app-tab--selected'),
                 ]
             ),
-            html.Div(id='tabs-content')
+            html.Div(id='tabs-content', className='content-panel')
         ])
     )
 ])
