@@ -2,9 +2,10 @@ import os
 
 import pandas as pd
 from callbacks import register_callbacks
-from dash import Dash, dcc, html
 from dynaconf import Dynaconf
 from sqlalchemy import Engine, create_engine
+
+from dash import Dash, dcc, html
 
 os.chdir(os.path.dirname(__file__))
 
@@ -51,7 +52,7 @@ query = """
 
 df = pd.read_sql(query, engine)
 
-app = Dash(__name__, suppress_callback_exceptions=False)
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 app.layout = html.Div([
     dcc.Loading(
@@ -62,11 +63,14 @@ app.layout = html.Div([
                 className='app-tabs',
                 children=[
                     dcc.Tab(label='⌂ Home', value='tab-home', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='♙ Presentation', value='tab-presentation', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='♙ Slides', value='tab-presentation', className='app-tab', selected_className='app-tab--selected'),
                     dcc.Tab(label='◇ Data Table', value='tab-data', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='▥ Graphs', value='tab-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▥ Genre', value='tab-genre-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▥ Platform', value='tab-platform-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▥ Publisher', value='tab-publisher-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▥ Graphs', value='tab-graph-pics', className='app-tab', selected_className='app-tab--selected'),
                     dcc.Tab(label='◉ Animated Graphs', value='tab-animated', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='⚒ Resources & Citations', value='tab-resources', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='⚒ Resources', value='tab-resources', className='app-tab', selected_className='app-tab--selected'),
                 ]
             ),
             html.Div(id='tabs-content', className='content-panel')

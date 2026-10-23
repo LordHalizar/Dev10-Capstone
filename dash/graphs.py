@@ -1,51 +1,48 @@
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objs as go
 
-from dash import dcc, html
+from dash import dcc
 
 
-def create_game_sales_graph(sales_locations_mapping: dict[str, str]) -> dcc.Graph:
+class Graphs:
+    def __init__(self, df: pd.DataFrame, region_mapping: dict[str, tuple[str, str]], x_column, x_label):
+        self.df = df 
+        self.region_mapping = region_mapping
+    def multi_region_dropdown_graph(
+            self, 
+            selected_multi: list[str],
+            selected_region: list[str], 
+            multi_mapping: dict[str, str],
+            title_context: str
+    ) -> dcc.Figure:
 
-    return html.Div(
-        className='tab-panel',
-        children=[
-            dcc.Dropdown(
-                id='selected-regions-dropdown',
-                options=[
-                    {'label': location, 'value': location} for location in sales_locations_mapping.values()
-                ],
-                value=list(sales_locations_mapping.values()),
-                multi=True,
-                placeholder='Select sales regions'
-            ),
-            dcc.Graph(id='game-sales-graph'),
+        if not selected_multi:
+            return px.line(title=f"Select at least one {multi_mapping['context']}.")
+
+        column, label = self.region_mapping.get(selected_region, (None, None))
+
+        if column is None:
+            return px.line(title="Select a valid region.")
+
+        data = self.df[
+            self.df[multi_mapping['option']].isin(selected_multi)
         ]
-    )
 
-def create_genres_region_graph(genres: list[str]) -> dcc.Graph:
+        fig = px.line(
+            data_frame=data,
+            x=x_axis_mapping['column'],
+            y=column,
+            color=multi_mapping['option'],
+            labels={
+                x_axis_mapping['column']: x_axis_mapping['label'],
+                column: label,
+                multi_mapping['option']: multi_mapping['option'].replace('_', ' ').title(),
+            },
+            title=f"{label} {title_context}"
+        )
 
-    return html.Div(
-        className='tab-panel',
-        children=[
-            dcc.Dropdown(
-                id='selected-genres-dropdown',
-                options=[
-                    {'label': genre, 'value': genre} for genre in genres
-                ],
-                value=genres,
-                multi=True,
-                placeholder='Select genres'
-            ),
-            dcc.Dropdown(
-                id='selected-region-dropdown',
-                options=[
-                    {'label': 'North America', 'value': 'North America'},
-                    {'label': 'Japan', 'value': 'Japan'},
-                ],
-                multi=False,
-                value='North America',
-                clearable=False
-            ),
-            dcc.Graph(id='genres-region-graph'),
-        ]
-    )
+        return fig
+    
+    def update_combined_layout(self):
+        pass

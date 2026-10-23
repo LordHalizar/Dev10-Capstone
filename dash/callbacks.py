@@ -3,6 +3,13 @@ import os
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+from tab_graphs import (
+    create_game_sales_graph,
+    create_genres_region_graph,
+    create_platforms_region_graph,
+    create_publishers_region_graph,
+    create_regions_genre_graph,
+)
 
 from dash import Dash, Input, Output, State, dash_table, dcc, html
 
@@ -29,7 +36,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         if tab == "tab-data":
 
             return html.Div(
-                className="tab-panel",
+                className="tab-graph",
                 children=[
                     html.H3("Data Table", className='tab-panel-title'),
                     dash_table.DataTable(
@@ -58,12 +65,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                     ),
                 ],
             )
-        if tab == 'tab-graphs':
-            sales_locations_mapping = {
-                'na_sales': 'North America',
-                'jp_sales': 'Japan'
-            }
-            
+
+        if tab == 'tab-genre-graphs':
             all_genres = sorted({
                 genre.strip()
                 for genres in df['genres'].dropna()
@@ -76,39 +79,54 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
-                    html.H3("Graphs", className='tab-panel-title'),
-                    dcc.Dropdown(
-                        id='selected-regions-dropdown',
-                        options=[
-                            {'label': location, 'value': location} for location in sales_locations_mapping.values()
-                        ],
-                        value=list(sales_locations_mapping.values()),
-                        multi=True,
-                        placeholder='Select sales regions'
-                    ),
-                    dcc.Graph(id='game-sales-graph'),
-                    dcc.Dropdown(
-                        id='selected-genres-dropdown',
-                        options=[
-                            {'label': genre, 'value': genre} for genre in all_genres
-                        ],
-                        value=all_genres,
-                        multi=True,
-                        placeholder='Select genres'
-                    ),
-                    dcc.Dropdown(
-                        id='selected-region-dropdown',
-                        options=[
-                            {'label': 'North America', 'value': 'North America'},
-                            {'label': 'Japan', 'value': 'Japan'},
-                        ],
-                        multi=False,
-                        value='North America',
-                        clearable=False
-                    ),
-                    dcc.Graph(id='genres-region-graph'),
+                    create_genres_region_graph(all_genres),
+                    create_regions_genre_graph(genres=all_genres, regions=['North America', 'Japan']),
                 ]
             )
+
+        if tab == 'tab-platform-graphs':
+            all_platforms = sorted(
+                platform.strip()
+                for platform in df['platform_name'].dropna().unique()
+                if isinstance(platform, str) and platform.strip()
+            )
+        
+            return html.Div(
+                className='tab-panel',
+                children=[
+                    create_platforms_region_graph(platforms=all_platforms, regions_mapping=REGIONS_MAPPING)
+                ]
+            )
+
+        
+        if tab == 'tab-publisher-graphs':
+            sales_locations_mapping = {
+                'na_sales': 'North America',
+                'jp_sales': 'Japan'
+            }
+
+            all_publishers = sorted({
+                publisher.strip()
+                for publishers in df['publishers'].dropna()
+                for publisher in (
+                    publishers.split(', ') if isinstance(publishers, str) else publishers
+                )
+                if isinstance(publisher, str) and publisher.strip()
+            })
+
+            return html.Div(
+                className='tab-panel',
+                children=[
+                    create_game_sales_graph(sales_locations_mapping), 
+                    create_publishers_region_graph(publishers=all_publishers, regions_mapping=REGIONS_MAPPING),
+                ]
+            )
+
+        if tab == 'tab-graph-pics':
+            return html.Div([
+                html.H3("Graph Pics")
+            ])
+
         if tab == 'tab-animated':
             return html.Div([
                 html.H3("Animated")
@@ -117,66 +135,43 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div([
                 html.H3("Resources")
             ])
+
+    REGION_COLUMNS = {
+        'North America': 'na_sales',
+        'Japan': 'jp_sales'
+    }
         
     @app.callback(
-        Output('genres-region-graph', 'figure'),
-        Input('selected-regions-dropdown', 'value')
+        Output('game-sales-graph', 'figure'),
+        Input('selected-sales_regions-dropdown', 'value')
     )
     def update_sales_graph(selected_regions):
 
-        date_column = 'release_year'
-        sales_columns_mapping = {
-            'na_sales': 'North America',
-            'jp_sales': 'Japan'
-        }
-        label_mapping = {
-            'release_year': 'Release Year',
-            'sales': 'Units Sold (millions)',
-            'region': 'Region'
-        }
-        title = "Video Game Sales by Release Year"
-        
-        if not selected_regions:
-            return px.line(
-                title='Select at least one region to display sales'
-            )
+        selected_regions = selected_regions or []
 
-        sales_long = df.melt(
-            id_vars=date_column,
-            value_vars=sales_columns_mapping.keys(),
-            var_name='region',
-            value_name='sales'
-        )
-
-        sales_long[date_column] = pd.to_numeric(
-            sales_long[date_column], errors='coerce'
-        )
-
-        sales_long['sales'] = pd.to_numeric(sales_long['sales'], errors='coerce')
-        sales_long = sales_long.dropna(subset=[date_column, 'sales'])
-
-        sales_long['region'] = sales_long['region'].map(
-            sales_columns_mapping
-        )
-
-        annual_sales = (
-            sales_long.groupby([date_column, 'region'], as_index=False)['sales']
-            .sum()
-            .sort_values(date_column)
-        )
-        
-        filtered = annual_sales[
-            annual_sales['region'].isin(selected_regions)
+        region_columns = [
+            REGION_COLUMNS[region]
+            for region in selected_regions
+            if region in REGION_COLUMNS
         ]
 
+        if not region_columns:
+            return px.line(title="Select at least one region.")
+
+        yearly_sales = df.groupby('release_year', as_index=False)[
+            ['na_sales', 'jp_sales']
+        ].sum()
+
         fig = px.line(
-            filtered,
-            x=date_column,
-            y='sales',
-            color='region',
-            markers=False,
-            labels=label_mapping,
-            title=title
+            data_frame=yearly_sales,
+            x='release_year',
+            y=region_columns,
+            labels={
+                'release_year': 'Release Year',
+                'value': 'Sales',
+                'variable': 'Region'
+            },
+            title='Video Game Sales by Release Year'
         )
 
         return fig
@@ -195,42 +190,36 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         )
     )
 
+    REGIONS_MAPPING = {
+        'North America': ('na_sales', 'North America Sales'),
+        'Japan': ('jp_sales', 'Japan Sales')
+    }
+
+
     @app.callback(
         Output('genres-region-graph', 'figure'),
         Input('selected-genres-dropdown', 'value'),
         Input('selected-region-dropdown', 'value')
     )
-    def update_region_genres_graph(selected_genres, selected_region):
+    def update_genres_region_graph(selected_genres, selected_region):
         
         if not selected_genres:
-            return px.line(
-                title='Select at least one genre to display sales'
-            )
+            return px.line(title="Select at least one genre.")
 
-        selected_genres = selected_genres or []
+        sales_column, sales_label = REGIONS_MAPPING.get(selected_region, (None, None))
 
-        regions_columns = {
-            'North America': ('na_sales', 'North America Sales'),
-            'Japan': ('jp_sales', 'Japan Sales')
-        }
+        if sales_column is None:
+            return px.line(title="Select a valid sales region.")
 
-        if not selected_region or selected_region not in regions_columns:
-            return px.line(
-                title='Select a valid sales region'
-            )
-
-        sales_column, sales_label = regions_columns[selected_region]
-
-        filtered = sales_by_year_genre[
+        data = sales_by_year_genre[
             sales_by_year_genre['genre'].isin(selected_genres)
         ]
 
         fig = px.line(
-            filtered,
+            data_frame=data,
             x='release_year',
             y=sales_column,
             color='genre',
-            markers=False,
             labels={
                 'release_year': 'Release Year',
                 sales_column: sales_label,
@@ -242,47 +231,144 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         return fig
 
     @app.callback(
-        Output('genre-sales-graph', 'figure'),
+        Output('regions-genre-graph', 'figure'),
         Input('selected-genre-dropdown', 'value'),
-        Input('selected-region-dropdown', 'value')
+        Input('selected-regions-dropdown', 'value')
     )
-    def update_regions_genre_graph(selected_genres, selected_region):
+    def update_regions_genre_graph(selected_genre, selected_regions):
         
-        if not selected_genres:
-            return px.line(
-                title='Select at least one genre to display sales'
+        if not selected_genre:
+            return px.line(title="Select at a genre.")
+
+        if not selected_regions:
+            return px.line(title="Select at least one sales region.")
+
+        data = sales_by_year_genre[
+            sales_by_year_genre['genre'] == selected_genre
+        ]
+
+        colors = px.colors.qualitative.Plotly
+
+        first_column, first_label = REGIONS_MAPPING[selected_regions[0]]
+
+        fig = px.line(
+            data_frame=data,
+            x='release_year',
+            y=first_column,
+            title=f"{selected_genre} Sales by Region and Year",
+            labels={
+                'release_year': 'Release Year',
+                first_column: 'Sales (millions)'
+            }
+        )
+        fig.update_traces(name=first_label, showlegend=True, line=dict(color=colors[0]))
+
+        for i, region in enumerate(selected_regions[1:], start=1):
+            sales_column, sales_label = REGIONS_MAPPING[region]
+
+            extra_line = px.line(
+                data_frame=data,
+                x='release_year',
+                y=sales_column
             )
+            extra_line.update_traces(name=sales_label, showlegend=True, line=dict(color=colors[i % len(colors)]))
+            fig.add_traces(extra_line.data)
 
-        selected_genres = selected_genres or []
+        fig.update_layout(
+            xaxis_title='Release Year',
+            yaxis_title='Sales (millions)',
+            legend_title_text='Region'
+        )
 
-        regions_columns = {
-            'North America': ('na_sales', 'North America Sales'),
-            'Japan': ('jp_sales', 'Japan Sales')
-        }
+        return fig
 
-        if not selected_region or selected_region not in regions_columns:
-            return px.line(
-                title='Select a valid sales region'
-            )
+    publisher_rows = df.explode('publishers').rename(columns={'publishers': 'publisher'})
+    publisher_rows = publisher_rows[publisher_rows['publisher'] != '']
 
-        sales_column, sales_label = regions_columns[selected_region]
+    sales_by_year_publisher = (
+        publisher_rows
+        .groupby(['release_year', 'publisher'], as_index=False)
+        .agg(
+            na_sales=('na_sales', 'sum'),
+            jp_sales=('jp_sales', 'sum')
+        )
+    )
 
-        filtered = sales_by_year_genre[
-            sales_by_year_genre['genre'].isin(selected_genres)
+    @app.callback(
+        Output('publishers-region-graph', 'figure'),
+        Input('selected-R_publishers-dropdown', 'value'),
+        Input('selected-P_region-dropdown', 'value')
+    )
+    def update_publishers_region_graph(selected_publishers, selected_region):
+        
+        if not selected_publishers:
+            return px.line(title="Select at least one publisher.")
+
+        sales_column, sales_label = REGIONS_MAPPING.get(selected_region, (None, None))
+
+        if sales_column is None:
+            return px.line(title="Select a valid sales region.")
+
+        data = sales_by_year_publisher[
+            sales_by_year_publisher['publisher'].isin(selected_publishers)
         ]
 
         fig = px.line(
-            filtered,
+            data_frame=data,
             x='release_year',
             y=sales_column,
-            color='genre',
-            markers=False,
+            color='publisher',
             labels={
                 'release_year': 'Release Year',
                 sales_column: sales_label,
-                'genre': 'Genre'
+                'publisher': 'Publisher'
             },
-            title=f"{sales_label} Game Sales by Genre and Year"
+            title=f"{sales_label} Game Sales by Publisher and Year"
+        )
+
+        return fig
+
+    platform_rows = df[df['platform_name'] != '']
+
+    sales_by_year_platform = (
+        platform_rows
+        .groupby(['release_year', 'platform_name'], as_index=False)
+        .agg(
+            na_sales=('na_sales', 'sum'),
+            jp_sales=('jp_sales', 'sum')
+        )
+    )
+
+    @app.callback(
+        Output('platforms-region-graph', 'figure'),
+        Input('selected-platforms-dropdown', 'value'),
+        Input('selected-Pl_region-dropdown', 'value')
+    )
+    def update_platform_regions_graph(selected_platforms, selected_region):
+        
+        if not selected_platforms:
+            return px.line(title="Select at least one platform/console.")
+
+        sales_column, sales_label = REGIONS_MAPPING.get(selected_region, (None, None))
+
+        if sales_column is None:
+            return px.line(title="Select a valid sales region.")
+
+        data = sales_by_year_platform[
+            sales_by_year_platform['platform_name'].isin(selected_platforms)
+        ]
+
+        fig = px.line(
+            data_frame=data,
+            x='release_year',
+            y=sales_column,
+            color='platform_name',
+            labels={
+                'release_year': 'Release Year',
+                sales_column: sales_label,
+                'platform_name': 'Platform'
+            },
+            title=f"{sales_label} Game Sales by Platform and Year"
         )
 
         return fig
