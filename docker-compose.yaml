@@ -17,6 +17,7 @@ services:
     environment:
       AIRFLOW_CONN_HTTP_SPARK: "http://api:5000/http"
       AIRFLOW_CONN_PG_CONN: "postgres://${DB_USER}:${DB_PASSWORD}@host.docker.internal:5432/${DB_DATABASE}"
+      AIRFLOW_CONN_SNOWFLAKE_CONN: "snowflake://${SNOWFLAKE_USER}:${SNOWFLAKE_PASSWORD}@${SNOWFLAKE_ACCOUNT}/?database=DEMO_DB&schema=${DB_SCHEMA}&warehouse=${SNOWFLAKE_WAREHOUSE}&role=${SNOWFLAKE_ROLE}"
 
   dash:
     build: ./dash

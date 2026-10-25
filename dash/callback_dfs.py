@@ -81,3 +81,25 @@ class VideoGameDataFrames:
             .reindex(full_index, fill_value=0)
             .reset_index()
         )
+
+    def animated_sales_by_year_platform_df(self) -> pd.DataFrame:
+        source = self._source_df()
+        source[self.sales_regions] = source[self.sales_regions].fillna(0)
+
+        source = source.dropna(subset=['release_year', 'platform_name'])
+
+        totals = self._sales_by_year_column_df(df=source, column='platform_name')
+
+        years = sorted(totals['release_year'].unique())
+        platforms = sorted(totals['platform_name'].unique())
+
+        full_index = pd.MultiIndex.from_product(
+            [years, platforms],
+            names=['release_year', 'platform_name']
+        )
+
+        return (
+            totals.set_index(['release_year', 'platform_name'])
+            .reindex(full_index, fill_value=0)
+            .reset_index()
+        )

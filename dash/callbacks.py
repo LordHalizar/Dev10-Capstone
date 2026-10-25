@@ -6,15 +6,17 @@ import plotly.graph_objs as go
 from callback_dfs import VideoGameDataFrames
 from callback_selection_options import VideoGameSelectionOptions
 from tab_graphs import (
+    create_animated_sales_by_year_genre,
+    create_animated_sales_by_year_platform,
     create_game_sales_graph,
+    create_game_sales_scatter,
     create_genres_region_graph,
     create_platforms_region_graph,
     create_publishers_region_graph,
     create_regions_genre_graph,
-    create_animated_sales_by_year_genre
 )
 
-from dash import Dash, Input, Output, State, dash_table, dcc, html
+from dash import Dash, Input, Output, dash_table, html
 
 os.chdir(os.path.dirname(__file__))
 
@@ -79,6 +81,21 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 ],
             )
 
+        if tab == 'tab-sales-graphs':
+
+            sales_locations_mapping = {
+                'na_sales': 'North America',
+                'jp_sales': 'Japan'
+            }
+
+            return html.Div(
+                className='tab-panel',
+                children=[
+                    create_game_sales_graph(sales_locations_mapping), 
+                    create_game_sales_scatter(sales_locations_mapping=sales_locations_mapping)
+                ]
+            )
+
         if tab == 'tab-genre-graphs':
 
             genres = VideoGameSelectionOptions(df=df).genre_selection_options()
@@ -102,23 +119,19 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
-                    create_platforms_region_graph(platforms=all_platforms, regions_mapping=REGIONS_MAPPING)
+                    create_platforms_region_graph(platforms=all_platforms, regions_mapping=REGIONS_MAPPING),
+                    create_animated_sales_by_year_platform(platforms=all_platforms, regions_mapping=REGIONS_MAPPING)
                 ]
             )
 
         
         if tab == 'tab-publisher-graphs':
-            sales_locations_mapping = {
-                'na_sales': 'North America',
-                'jp_sales': 'Japan'
-            }
 
             publishers = VideoGameSelectionOptions(df=df).publisher_selection_options()
 
             return html.Div(
                 className='tab-panel',
                 children=[
-                    create_game_sales_graph(sales_locations_mapping), 
                     create_publishers_region_graph(publishers=publishers, regions_mapping=REGIONS_MAPPING),
                 ]
             )
@@ -128,10 +141,6 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 html.H3("Graph Pics")
             ])
 
-        if tab == 'tab-animated':
-            return html.Div([
-                html.H3("Animated")
-            ])
         if tab == 'tab-resources':
             return html.Div([
                 html.H3("Resources")
@@ -166,6 +175,54 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 'release_year': 'Release Year',
                 'value': 'Sales',
                 'variable': 'Region'
+            },
+            title='Video Game Sales by Release Year'
+        )
+
+        return fig
+
+    @app.callback(
+        Output('game-sales-scatter', 'figure'),
+        Input('selected-scatter_regions-dropdown', 'value')
+    )
+    def update_sales_scatter(selected_regions):
+
+        selected_regions = selected_regions or []
+
+        region_columns = [
+            REGION_COLUMNS[region]
+            for region in (selected_regions or [])
+            if region in REGION_COLUMNS
+        ]
+
+        if not region_columns:
+            return px.scatter(title="Select at least one region.")
+
+        missing = set(region_columns) - set(df.columns)
+        if missing:
+            raise ValueError(f"Sales columns are missing from df: {missing}")
+
+        yearly_sales = df.groupby('release_year', as_index=False)[region_columns].sum()
+
+        plot_data = yearly_sales.melt(
+            id_vars='release_year',
+            value_vars=region_columns,
+            var_name='region',
+            value_name='sales'
+        )
+
+        column_to_region = {column: region for region, column in REGION_COLUMNS.items()}
+        plot_data["region"] = plot_data["region"].map(column_to_region)
+
+        fig = px.scatter(
+            data_frame=plot_data,
+            x='release_year',
+            y='sales',
+            color='region',
+            labels={
+                'release_year': 'Release Year',
+                'sales': 'Sales',
+                'region': 'Region'
             },
             title='Video Game Sales by Release Year'
         )
@@ -378,6 +435,54 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         fig.update_layout(
             xaxis_title=f"{selected_region} sales",
             yaxis_title="Genre"
+        )
+
+        return fig
+
+    animated_sales_by_year_platform_df = VideoGameDataFrames(df=df).animated_sales_by_year_platform_df()
+
+    @app.callback(
+        Output('platform-sales-animated', 'figure'),
+        Input('selected-animated_platforms-dropdown', 'value'),
+        Input('selected-pl_animated_region-dropdown', 'value'),
+    )
+    def update_animated_sales_by_year_platform(selected_platforms, selected_region):
+
+        def max_range(df: pd.DataFrame, range_value: str):
+            return df[range_value].max() * 1.1
+
+        if not selected_platforms:
+            return px.line(title="Select at least one platform/console.")
+
+        if selected_region not in REGIONS_MAPPING:
+            return px.line(title="Select a valid sales region.")
+        
+        region_sales_column, region_sales_label = REGIONS_MAPPING.get(selected_region, (None, None))
+
+        data = animated_sales_by_year_platform_df[
+            animated_sales_by_year_platform_df['platform_name'].isin(selected_platforms)
+        ]
+
+        max_sales_range = max_range(df=data, range_value=region_sales_column)
+
+        fig = px.bar(
+            data_frame=data,
+            x=region_sales_column,
+            y='platform_name',
+            color='platform_name',
+            animation_frame='release_year',
+            animation_group='platform_name',
+            labels={
+                region_sales_column: region_sales_label,
+                'platform_name': 'Gaming Platform',
+                'release_year': 'Release Year'
+            },
+            range_x=[0, max_sales_range]
+        )
+
+        fig.update_layout(
+            xaxis_title=region_sales_label,
+            yaxis_title="Platform"
         )
 
         return fig

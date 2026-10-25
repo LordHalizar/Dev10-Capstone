@@ -54,7 +54,7 @@ REPLACE_MAPPING = {
 }
 
 INT_RANGE_MAPPING = {
-    'release_year': {'lower_range': 1980, 'upper_range': 2010}
+    'release_year': {'lower_range': 1980, 'upper_range': 2015}
 }
 
 def et_process(spark: sp.SparkSession):
