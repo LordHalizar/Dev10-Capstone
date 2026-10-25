@@ -3,17 +3,30 @@ import os
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+from callback_dfs import VideoGameDataFrames
+from callback_selection_options import VideoGameSelectionOptions
 from tab_graphs import (
     create_game_sales_graph,
     create_genres_region_graph,
     create_platforms_region_graph,
     create_publishers_region_graph,
     create_regions_genre_graph,
+    create_animated_sales_by_year_genre
 )
 
 from dash import Dash, Input, Output, State, dash_table, dcc, html
 
 os.chdir(os.path.dirname(__file__))
+
+REGIONS_MAPPING = {
+    'North America': ('na_sales', 'North America Sales'),
+    'Japan': ('jp_sales', 'Japan Sales')
+}
+
+REGION_COLUMNS = {
+    'North America': 'na_sales',
+    'Japan': 'jp_sales'
+}
 
 def register_callbacks(app: Dash, df: pd.DataFrame):
 
@@ -67,20 +80,15 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             )
 
         if tab == 'tab-genre-graphs':
-            all_genres = sorted({
-                genre.strip()
-                for genres in df['genres'].dropna()
-                for genre in (
-                    genres.split(', ') if isinstance(genres, str) else genres
-                )
-                if isinstance(genre, str) and genre.strip()
-            })
+
+            genres = VideoGameSelectionOptions(df=df).genre_selection_options()
 
             return html.Div(
                 className='tab-panel',
                 children=[
-                    create_genres_region_graph(all_genres),
-                    create_regions_genre_graph(genres=all_genres, regions=['North America', 'Japan']),
+                    create_genres_region_graph(genres),
+                    create_regions_genre_graph(genres=genres, regions=['North America', 'Japan']),
+                    create_animated_sales_by_year_genre(regions_mapping=REGIONS_MAPPING)
                 ]
             )
 
@@ -105,20 +113,13 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 'jp_sales': 'Japan'
             }
 
-            all_publishers = sorted({
-                publisher.strip()
-                for publishers in df['publishers'].dropna()
-                for publisher in (
-                    publishers.split(', ') if isinstance(publishers, str) else publishers
-                )
-                if isinstance(publisher, str) and publisher.strip()
-            })
+            publishers = VideoGameSelectionOptions(df=df).publisher_selection_options()
 
             return html.Div(
                 className='tab-panel',
                 children=[
                     create_game_sales_graph(sales_locations_mapping), 
-                    create_publishers_region_graph(publishers=all_publishers, regions_mapping=REGIONS_MAPPING),
+                    create_publishers_region_graph(publishers=publishers, regions_mapping=REGIONS_MAPPING),
                 ]
             )
 
@@ -135,11 +136,6 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div([
                 html.H3("Resources")
             ])
-
-    REGION_COLUMNS = {
-        'North America': 'na_sales',
-        'Japan': 'jp_sales'
-    }
         
     @app.callback(
         Output('game-sales-graph', 'figure'),
@@ -176,24 +172,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
 
         return fig
 
-    df['genres'] = df['genres'].fillna('').str.split(', ')
-
-    genre_rows = df.explode('genres').rename(columns={'genres': 'genre'})
-    genre_rows = genre_rows[genre_rows['genre'] != '']
-
-    sales_by_year_genre = (
-        genre_rows
-        .groupby(['release_year', 'genre'], as_index=False)
-        .agg(
-            na_sales=('na_sales', 'sum'),
-            jp_sales=('jp_sales', 'sum')
-        )
-    )
-
-    REGIONS_MAPPING = {
-        'North America': ('na_sales', 'North America Sales'),
-        'Japan': ('jp_sales', 'Japan Sales')
-    }
+    update_genres_region_df = VideoGameDataFrames(df=df).sales_by_year_genre_df()
 
 
     @app.callback(
@@ -211,8 +190,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         if sales_column is None:
             return px.line(title="Select a valid sales region.")
 
-        data = sales_by_year_genre[
-            sales_by_year_genre['genre'].isin(selected_genres)
+        data = update_genres_region_df[
+            update_genres_region_df['genre'].isin(selected_genres)
         ]
 
         fig = px.line(
@@ -243,8 +222,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         if not selected_regions:
             return px.line(title="Select at least one sales region.")
 
-        data = sales_by_year_genre[
-            sales_by_year_genre['genre'] == selected_genre
+        data = update_genres_region_df[
+            update_genres_region_df['genre'] == selected_genre
         ]
 
         colors = px.colors.qualitative.Plotly
@@ -282,17 +261,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
 
         return fig
 
-    publisher_rows = df.explode('publishers').rename(columns={'publishers': 'publisher'})
-    publisher_rows = publisher_rows[publisher_rows['publisher'] != '']
-
-    sales_by_year_publisher = (
-        publisher_rows
-        .groupby(['release_year', 'publisher'], as_index=False)
-        .agg(
-            na_sales=('na_sales', 'sum'),
-            jp_sales=('jp_sales', 'sum')
-        )
-    )
+    update_publishers_region_df = VideoGameDataFrames(df=df).sales_by_year_publisher_df()
 
     @app.callback(
         Output('publishers-region-graph', 'figure'),
@@ -309,8 +278,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         if sales_column is None:
             return px.line(title="Select a valid sales region.")
 
-        data = sales_by_year_publisher[
-            sales_by_year_publisher['publisher'].isin(selected_publishers)
+        data = update_publishers_region_df[
+            update_publishers_region_df['publisher'].isin(selected_publishers)
         ]
 
         fig = px.line(
@@ -369,6 +338,46 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 'platform_name': 'Platform'
             },
             title=f"{sales_label} Game Sales by Platform and Year"
+        )
+
+        return fig
+
+    update_animated_sales_by_year_genre_df = VideoGameDataFrames(df=df).animated_sales_by_year_genre_df()
+
+    @app.callback(
+        Output('genre-sales-animated', 'figure'),
+        Input('selected-animated_region-dropdown', 'value')
+    )
+    def update_animated_sales_by_year_genre(selected_region):
+
+        def max_range(df: pd.DataFrame, range_value: str):
+            return df[range_value].max() * 1.1
+        
+        region_sales_column, region_sales_label = REGIONS_MAPPING.get(selected_region, (None, None))
+
+        if selected_region not in REGIONS_MAPPING:
+            return px.line(title="Select a valid sales region.")
+
+        max_sales_range = max_range(df=update_animated_sales_by_year_genre_df, range_value=region_sales_column)
+
+        fig = px.bar(
+            data_frame=update_animated_sales_by_year_genre_df,
+            x=region_sales_column,
+            y='genre',
+            color='genre',
+            animation_frame='release_year',
+            animation_group='genre',
+            labels={
+                region_sales_column: region_sales_label,
+                'genre': 'Genre',
+                'release_year': 'Release Year'
+            },
+            range_x=[0, max_sales_range]
+        )
+
+        fig.update_layout(
+            xaxis_title=f"{selected_region} sales",
+            yaxis_title="Genre"
         )
 
         return fig

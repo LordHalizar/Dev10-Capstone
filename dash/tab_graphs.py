@@ -1,4 +1,3 @@
-import pandas as pd
 import plotly.express as px
 
 from dash import dcc, html
@@ -129,5 +128,24 @@ def create_platforms_region_graph(platforms: list[str], regions_mapping: dict[st
                 clearable=False
             ),
             dcc.Graph(id='platforms-region-graph'),
+        ]
+    )
+
+def create_animated_sales_by_year_genre(regions_mapping: dict[str, tuple[str, str]]) -> html.Div:
+    regions = list(regions_mapping.keys())
+
+    return html.Div(
+        className='tab-panel',
+        children=[
+            dcc.Dropdown(
+                id='selected-animated_region-dropdown',
+                options=[
+                    {'label': region, 'value': region} for region in regions
+                ],
+                multi=False,
+                value=regions[0] if regions else None,
+                clearable=False
+            ),
+            dcc.Graph(id='genre-sales-animated'),
         ]
     )
