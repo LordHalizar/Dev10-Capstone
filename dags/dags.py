@@ -4,6 +4,7 @@ import os
 
 import pandas as pd
 import pendulum
+import snowflake.connector
 from airflow.decorators import dag
 from airflow.operators.python import PythonOperator
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
@@ -59,45 +60,106 @@ def http_postgres_data_insert():
     catchup=False,
     tags=["snowflake"],
 )
-def http_snowflake_data_insert():
+def http_snowflake_database():
     def execute_snowflake_schema():
         with open(SNOWFLAKE_FILE_PATH, 'r') as file:
             return file.read()
 
+    # def run_snowflake_sql():
+    #     import snowflake.connector
+    #     conn = snowflake.connector.connect(
+    #         user='CROSBYALEXANDER42',
+    #         password='ZachFrance42@1992',
+    #         account='NSBQTZA-ZK05168',
+    #         warehouse='COMPUTE_WH',
+    #         role='ACCOUNTADMIN'
+    #     )
+        
+    #     try:
+    #         cursor = conn.cursor()
+    #         sql = execute_snowflake_schema()
+    #         # Split by semicolon and execute each statement
+    #         statements = [stmt.strip() for stmt in sql.split(';') if stmt.strip()]
+    #         logger.info(f"Executing {len(statements)} SQL statements")
+    #         for i, stmt in enumerate(statements):
+    #             logger.info(f"Statement {i+1}: {stmt[:80]}...")
+    #             cursor.execute(stmt)
+    #             logger.info(f"Statement {i+1} executed successfully")
+    #         cursor.close()
+            
+    #         # Verify tables were created
+    #         cursor = conn.cursor()
+    #         cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'VIDEO_GAMES'")
+    #         tables = cursor.fetchall()
+    #         logger.info(f"Tables in VIDEO_GAMES schema: {tables}")
+    #         cursor.close()
+            
+    #         return "Schema created successfully"
+    #     except Exception as e:
+    #         logger.error(f"Error: {str(e)}", exc_info=True)
+    #         raise
+    #     finally:
+    #         conn.close()
+
+    # from airflow.operators.python import PythonOperator
+    # snowflake_schema_task = PythonOperator(
+    #     task_id='execute_snowflake_task',
+    #     python_callable=run_snowflake_sql
+    # )
+
     snowflake_schema_task = SQLExecuteQueryOperator(
-        task_id='execute_snowflake_task',
-        conn_id='snowflake_conn',
+        task_id="execute_snowflake_task",
+        conn_id="snowflake_conn",
         sql=execute_snowflake_schema(),
         hook_params={
-            'account': 'NSBQTZA-ZK05168',
-            'warehouse': 'COMPUTE_WH',
-            'database': 'DEMO_DB',
-            'schema': 'VIDEO_GAMES',
-            'role': 'ACCOUNTADMIN',
-        }
+            "account": os.environ["SNOWFLAKE_ACCOUNT"],
+            "warehouse": os.environ["SNOWFLAKE_WAREHOUSE"],
+            "database": os.environ["SNOWFLAKE_DATABASE"],
+            "schema": os.environ["SNOWFLAKE_SCHEMA"],
+            "role": os.environ["SNOWFLAKE_ROLE"],
+        },
     )
 
+    snowflake_schema_task
+
+@dag(
+    schedule=None,
+    start_date=pendulum.datetime(2026, 1, 1, tz="UTC"),
+    catchup=False,
+    tags=["snowflake"],
+)
+def http_snowflake_insert():
     def copy_table_to_snowflake(table_name: str):
-        settings = Dynaconf(envvar_prefix="DB", load_dotenv=True)
-        engine = create_engine(settings.ENGINE_URL, echo=True)
+        # Use host.docker.internal to connect from inside container
+        db_engine_url = "postgresql+psycopg://postgres:password@host.docker.internal:5432/postgres?options=-c%20search_path=video_games"
+        engine = create_engine(db_engine_url, echo=True)
 
         try:
-            df = pd.read_sql(f'select * from "{table_name}"', engine)
+            df = pd.read_sql(f'select * from {table_name}', engine)
         finally:
             engine.dispose()
 
         if df.empty:
             return 0
 
-        hook = SnowflakeHook(snowflake_conn_id='snowflake_conn')
-        conn = hook.get_conn()
+        # Use snowflake-connector directly instead of hook
+        
+        conn = snowflake.connector.connect(
+            user='CROSBYALEXANDER42',
+            password='ZachFrance42@1992',
+            account='NSBQTZA-ZK05168',
+            warehouse='COMPUTE_WH',
+            database='DEMO_DB',
+            schema='VIDEO_GAMES',
+            role='ACCOUNTADMIN'
+        )
 
         try:
             columns = list(df.columns)
-            quoted_columns = ', '.join(f'"{column}"' for column in columns)
+            quoted_columns = ', '.join(f'{column}' for column in columns)
             placeholders = ', '.join(['%s'] * len(columns))
             insert_sql = (
-                f'insert into "{table_name}" ({quoted_columns}) '
+                f'insert into {table_name} ({quoted_columns}) '
                 f"values ({placeholders})"
             )
 
@@ -160,7 +222,8 @@ def http_snowflake_data_insert():
         op_kwargs={'table_name': 'sales'}
     )
 
-    snowflake_schema_task >> copy_genre >> copy_publisher >> copy_game >> copy_game_genre >> copy_game_publisher >> copy_platform >> copy_game_platform >> copy_game_platform_release >> copy_sales
+    copy_genre >> copy_publisher >> copy_game >> copy_game_genre >> copy_game_publisher >> copy_platform >> copy_game_platform >> copy_game_platform_release >> copy_sales
 
 http_postgres_data_insert()
-http_snowflake_data_insert()
+http_snowflake_database()
+http_snowflake_insert()

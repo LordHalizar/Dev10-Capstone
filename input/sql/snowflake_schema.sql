@@ -1,4 +1,4 @@
-use role sysadmin;
+use role accountadmin;
 use database demo_db;
 create schema if not exists video_games;
 use schema video_games;
