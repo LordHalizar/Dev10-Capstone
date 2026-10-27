@@ -255,7 +255,7 @@ def create_animated_sales_by_year_platform(platforms: list[str], regions_mapping
                 options=[
                     {'label': platform, 'value': platform} for platform in platforms
                 ],
-                value=platforms,
+                value=['GameBoy', 'GameBoy Advance', 'NES', 'Nintendo 3DS', 'Nintendo 64', 'Nintendo DS', 'Nintendo GameCube', 'Nintendo Wii', 'PC', 'PS1', 'PS2', 'PS3', 'PS4', 'SNES', 'WiiU', 'Xbox', 'Xbox 360', 'Xbox One'],
                 multi=True,
                 placeholder='Select Platforms'
             ),

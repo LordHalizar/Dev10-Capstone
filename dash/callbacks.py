@@ -17,7 +17,7 @@ from tab_graphs import (
     update_graph_style2,
 )
 
-from dash import Dash, Input, Output, dash_table, html
+from dash import Dash, Input, Output, State, dash_table, dcc, html
 
 os.chdir(os.path.dirname(__file__))
 
@@ -31,6 +31,17 @@ REGION_COLUMNS = {
     'Japan': 'jp_sales'
 }
 
+slide_paths = [
+    "/assets/slides/Capstone_slide_1.png",
+    "/assets/slides/Capstone_slide_2.png",
+    "/assets/slides/Capstone_slide_3.png",
+    "/assets/slides/Capstone_slide_4.png",
+    "/assets/slides/Capstone_slide_5.png",
+    "/assets/slides/Capstone_slide_6.png",
+    "/assets/slides/Capstone_slide_7.png",
+    "/assets/slides/Capstone_slide_8.png",
+]
+
 def register_callbacks(app: Dash, df: pd.DataFrame):
 
     @app.callback(
@@ -39,13 +50,50 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
     )
     def render_content(tab):
 
-        if tab == 'tab-presentation':
+        if tab == "tab-presentation":
             return html.Div(
-                className='tab-panel',
+                className="tab-panel",
                 children=[
-                    html.H3("Presentation", className='tab-panel-title'),
-                ]
+                    dcc.Store(id="slide-index", data=0),
+                    html.Div(
+                        [
+                            html.Img(
+                                id="slide-image",
+                                src=slide_paths[0],
+                                style={"width": "100%", "height": "auto"},
+                            ),
+                            html.Div(
+                                [
+                                    html.Button(
+                                        "Previous",
+                                        id="previous-slide",
+                                        n_clicks=0,
+                                    ),
+                                    html.Span(
+                                        f"Slide 1 of {len(slide_paths)}",
+                                        id="slide-counter",
+                                        style={"margin": "0 16px"},
+                                    ),
+                                    html.Button(
+                                        "Next",
+                                        id="next-slide",
+                                        n_clicks=0,
+                                    ),
+                                ],
+                                style={
+                                    "display": "flex",
+                                    "justifyContent": "center",
+                                    "alignItems": "center",
+                                    "marginTop": "12px",
+                                },
+                            ),
+                        ],
+                        style={"maxWidth": "1000px", "margin": "0 auto"},
+                    ),
+                ],
             )
+
+
 
         if tab == "tab-data":
 
@@ -139,15 +187,49 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
                 ]
             )
 
-        if tab == 'tab-graph-pics':
-            return html.Div([
-                html.H3("Graphs", className='tab-panel-title'),
-            ])
+        # if tab == 'tab-graph-pics':
+        #     return html.Div([
+        #         html.H3("Graphs", className='tab-panel-title'),
+        #     ])
 
-        if tab == 'tab-resources':
-            return html.Div([
-                html.H3("Resources", className='tab-panel-title'),
-            ])
+        # if tab == 'tab-resources':
+        #     return html.Div([
+        #         html.H3("Resources", className='tab-panel-title'),
+        #     ])
+
+    @app.callback(
+        Output("slide-index", "data"),
+        Input("previous-slide", "n_clicks"),
+        Input("next-slide", "n_clicks"),
+        State("slide-index", "data"),
+        prevent_initial_call=True,
+    )
+    def change_slide(previous_clicks, next_clicks, index):
+        from dash import ctx
+
+        if ctx.triggered_id == "previous-slide":
+            return max(0, index - 1)
+
+        if ctx.triggered_id == "next-slide":
+            return min(len(slide_paths) - 1, index + 1)
+
+        return index
+
+
+    @app.callback(
+        Output("slide-image", "src"),
+        Output("slide-counter", "children"),
+        Output("previous-slide", "disabled"),
+        Output("next-slide", "disabled"),
+        Input("slide-index", "data"),
+    )
+    def display_slide(index):
+        return (
+            slide_paths[index],
+            f"Slide {index + 1} of {len(slide_paths)}",
+            index == 0,
+            index == len(slide_paths) - 1,
+        )
         
     @app.callback(
         Output('game-sales-graph', 'figure'),
