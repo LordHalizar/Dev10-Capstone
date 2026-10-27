@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    background: #f3f4f6;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.app-tabs {
+    background: #24bd88;
+    padding: 34px 5% 0;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Individual tabs */
+.app-tabs .app-tab {
+    height: 52px;
+    padding: 12px 18px;
+    background: transparent;
+    border: none !important;
+    color: #eafff6;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Selected tab */
+.app-tabs .app-tab--selected {
+    background: #fff !important;
+    color: #24a879 !important;
+    border-radius: 5px 5px 0 0;
+    font-weight: 600;
+}
+
+/* The content area below the tabs */
+.content-panel {
+    max-width: 1100px;
+    min-height: 400px;
+    margin: 28px auto;
+    padding: 28px;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.tab-panel {
+    max-width: 1100px;
+    min-height: 400px;
+    margin: 28px auto;
+    /* padding: 28px; */
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.tab-graph {
+    background: white;
+    border: 1px solid #dce8e4;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Shared heading style */
+/* .tab-panel h3 {
+    margin: 0 0 20px;
+    color: #333;
+    font-size: 20px;
+} */
+
+.tab-panel-title {
+    margin: 0 0 24px;
+    padding: 12px 16px;
+    text-align: center;
+    color: #fff;
+    background: #24bd88;
+    font-size: 24px;
+    font-weight: 600;
+    border-radius: 5px;
+}
+
+/* Dropdown control */
+.dashboard-dropdown .Select-control {
+    background-color: #fff;
+    border: 1px solid #dfe7e4;
+    border-radius: 5px;
+    min-height: 40px;
+    box-shadow: none;
+}
+
+/* Selected text and placeholder */
+.dashboard-dropdown .Select-value-label,
+.dashboard-dropdown .Select-placeholder {
+    color: #263238;
+    font-size: 13px;
+}
+
+/* Focused/open control */
+.dashboard-dropdown.is-focused:not(.is-open) > .Select-control {
+    border-color: #24bd88;
+    box-shadow: 0 0 0 2px rgba(36, 189, 136, 0.15);
+}
+
+/* Dropdown menu */
+.dashboard-dropdown .Select-menu-outer {
+    background-color: #fff;
+    border: 1px solid #dfe7e4;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+}
+
+/* Option hover */
+.dashboard-dropdown .Select-option.is-focused {
+    background-color: #e8f7f1;
+    color: #123047;
+}
+
+/* Selected option */
+.dashboard-dropdown .Select-option.is-selected {
+    background-color: #24bd88;
+    color: #fff;
+}

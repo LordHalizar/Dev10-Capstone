@@ -1,2 +1,8 @@
+callbacks
+dash
+dynaconf
 pandas
+plotly
 openpyxl
+sqlalchemy
+psycopg[binary]

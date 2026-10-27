@@ -16,7 +16,7 @@ List the questions that guide the project (aim for 5–10):
 
 1. which gaming genres saw the most sales per year (aka most popular genres)? 
 2. Which consoles saw the largest sales based on available data?
-3. ...
+3. which publishers saw consistent sales figures?
 4. How have video games sales changed over time?
 5. which genres are more popular with each console?
 

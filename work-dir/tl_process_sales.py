@@ -14,7 +14,7 @@ LOOKUP_MAPPING = [
     },
     {
         'table': 'game',
-        'join_key': ['game_title', 'release_year', 'genre_id', 'publisher_id'],
+        'join_key': 'game_title',
         'foreign_key': 'game_id'
     },
     {
@@ -26,6 +26,11 @@ LOOKUP_MAPPING = [
         'table': 'game_platform',
         'join_key': ['game_id', 'platform_id'],
         'foreign_key': 'game_platform_id'
+    },
+    {
+        'table': 'game_platform_release',
+        'join_key': 'game_platform_id',
+        'foreign_key': 'game_platform_release_id'
     }
 ]
 

@@ -1,3 +1,5 @@
 FROM apache/airflow:latest
 
-RUN pip install apache-airflow-providers-postgres
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt

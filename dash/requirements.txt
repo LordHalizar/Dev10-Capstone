@@ -1,0 +1,5 @@
+pandas
+dash
+dynaconf
+sqlalchemy
+psycopg[binary]
