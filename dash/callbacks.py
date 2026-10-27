@@ -14,6 +14,7 @@ from tab_graphs import (
     create_platforms_region_graph,
     create_publishers_region_graph,
     create_regions_genre_graph,
+    update_graph_style2,
 )
 
 from dash import Dash, Input, Output, dash_table, html
@@ -37,21 +38,19 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
         Input('tabs', 'value')
     )
     def render_content(tab):
-        if tab == 'tab-home':
-            return html.Div([
-                html.H3("Overview"),
-                html.P(f"Rows in dataset: {len(df):,}")
-            ])
 
         if tab == 'tab-presentation':
-            return html.Div([
-                html.H3("Presentation")
-            ])
+            return html.Div(
+                className='tab-panel',
+                children=[
+                    html.H3("Presentation", className='tab-panel-title'),
+                ]
+            )
 
         if tab == "tab-data":
 
             return html.Div(
-                className="tab-graph",
+                className="tab-panel",
                 children=[
                     html.H3("Data Table", className='tab-panel-title'),
                     dash_table.DataTable(
@@ -91,6 +90,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
+                    html.H3("Video Game Sales", className='tab-panel-title'),
                     create_game_sales_graph(sales_locations_mapping), 
                     create_game_sales_scatter(sales_locations_mapping=sales_locations_mapping)
                 ]
@@ -103,6 +103,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
+                    html.H3("Sales by Genre", className='tab-panel-title'),
                     create_genres_region_graph(genres),
                     create_regions_genre_graph(genres=genres, regions=['North America', 'Japan']),
                     create_animated_sales_by_year_genre(regions_mapping=REGIONS_MAPPING)
@@ -119,6 +120,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
+                    html.H3("Sales by Platform", className='tab-panel-title'),
                     create_platforms_region_graph(platforms=all_platforms, regions_mapping=REGIONS_MAPPING),
                     create_animated_sales_by_year_platform(platforms=all_platforms, regions_mapping=REGIONS_MAPPING)
                 ]
@@ -132,18 +134,19 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             return html.Div(
                 className='tab-panel',
                 children=[
+                    html.H3("Sales by Publisher", className='tab-panel-title'),
                     create_publishers_region_graph(publishers=publishers, regions_mapping=REGIONS_MAPPING),
                 ]
             )
 
         if tab == 'tab-graph-pics':
             return html.Div([
-                html.H3("Graph Pics")
+                html.H3("Graphs", className='tab-panel-title'),
             ])
 
         if tab == 'tab-resources':
             return html.Div([
-                html.H3("Resources")
+                html.H3("Resources", className='tab-panel-title'),
             ])
         
     @app.callback(
@@ -178,6 +181,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             },
             title='Video Game Sales by Release Year'
         )
+
+        update_graph_style2(fig)
 
         return fig
 
@@ -227,6 +232,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             title='Video Game Sales by Release Year'
         )
 
+        update_graph_style2(fig)
+
         return fig
 
     update_genres_region_df = VideoGameDataFrames(df=df).sales_by_year_genre_df()
@@ -263,6 +270,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             },
             title=f"{sales_label} Game Sales by Genre and Year"
         )
+
+        update_graph_style2(fig)
 
         return fig
 
@@ -316,6 +325,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             legend_title_text='Region'
         )
 
+        update_graph_style2(fig)
+
         return fig
 
     update_publishers_region_df = VideoGameDataFrames(df=df).sales_by_year_publisher_df()
@@ -351,6 +362,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             },
             title=f"{sales_label} Game Sales by Publisher and Year"
         )
+
+        update_graph_style2(fig)
 
         return fig
 
@@ -397,6 +410,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             title=f"{sales_label} Game Sales by Platform and Year"
         )
 
+        update_graph_style2(fig)
+
         return fig
 
     update_animated_sales_by_year_genre_df = VideoGameDataFrames(df=df).animated_sales_by_year_genre_df()
@@ -436,6 +451,8 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             xaxis_title=f"{selected_region} sales",
             yaxis_title="Genre"
         )
+
+        update_graph_style2(fig)
 
         return fig
 
@@ -484,5 +501,7 @@ def register_callbacks(app: Dash, df: pd.DataFrame):
             xaxis_title=region_sales_label,
             yaxis_title="Platform"
         )
+
+        update_graph_style2(fig)
 
         return fig

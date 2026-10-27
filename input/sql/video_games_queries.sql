@@ -169,8 +169,7 @@ group by
     s.jp_sales
 order by ga.game_title, pl.platform_name, gaplr.release_year;
 
-select 
+select
 	
-	release_year,
 
 show config_file;

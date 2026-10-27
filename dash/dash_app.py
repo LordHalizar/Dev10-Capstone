@@ -59,17 +59,17 @@ app.layout = html.Div([
         children=html.Div([
             dcc.Tabs(
                 id='tabs',
-                value='tab-home',
+                value='tab-presentation',
                 className='app-tabs',
                 children=[
-                    dcc.Tab(label='⌂ Home', value='tab-home', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='♙ Slides', value='tab-presentation', className='app-tab', selected_className='app-tab--selected'),
+                    # dcc.Tab(label='⌂♙ Home', value='tab-home', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='⌂ Home', value='tab-presentation', className='app-tab', selected_className='app-tab--selected'),
                     dcc.Tab(label='◇ Data Table', value='tab-data', className='app-tab', selected_className='app-tab--selected'),
                     dcc.Tab(label='▥ Sales', value='tab-sales-graphs', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='▥ Genre', value='tab-genre-graphs', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='▥ Platform', value='tab-platform-graphs', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='▥ Publisher', value='tab-publisher-graphs', className='app-tab', selected_className='app-tab--selected'),
-                    dcc.Tab(label='▥ Graphs', value='tab-graph-pics', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▤ Genre', value='tab-genre-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▦ Platform', value='tab-platform-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='▩ Publisher', value='tab-publisher-graphs', className='app-tab', selected_className='app-tab--selected'),
+                    dcc.Tab(label='◉ Graphs', value='tab-graph-pics', className='app-tab', selected_className='app-tab--selected'),
                     # dcc.Tab(label='◉ Animated Graphs', value='tab-animated', className='app-tab', selected_className='app-tab--selected'),
                     dcc.Tab(label='⚒ Resources', value='tab-resources', className='app-tab', selected_className='app-tab--selected'),
                 ]

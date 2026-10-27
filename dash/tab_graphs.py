@@ -2,6 +2,73 @@ import plotly.express as px
 
 from dash import dcc, html
 
+def update_graph_style1(fig):
+    return fig.update_layout(
+        title={
+            'text': "Game Sales by Region",
+            'x': 0.5,                   # center title
+            'xanchor': "center",
+            'font': {
+                'family': "Arial, sans-serif",
+                'size': 23,
+                'color': "black",
+            },
+            # Green title bar, similar to your Data Table heading
+            'pad': {'t': 10, 'b': 10},
+        },
+
+        # Axis labels and tick labels
+        xaxis={
+            'title': {
+                'font': {'family': "Arial, sans-serif", 'size': 15, 'color': "#123047"}
+            },
+            'tickfont': {'family': "Arial, sans-serif", 'size': 12, 'color': "#123047"},
+        },
+        yaxis={
+            'title': {
+                'font': {'family': "Arial, sans-serif", 'size': 15, 'color': "#123047"}
+            },
+            'tickfont': {'family': "Arial, sans-serif", 'size': 12, 'color': "#123047"},
+        },
+
+        legend={
+            'font': {'family': "Arial, sans-serif", 'size': 12, 'color': "#123047"},
+        },
+    )
+
+def update_graph_style2(fig):
+    return fig.update_layout(
+        template="plotly_white",
+        font={
+            'family': "Arial, sans-serif",
+            'size': 12,
+            'color': "#263238",
+        },
+        title={
+            'font': {'size': 18, 'color': "#263238"},
+            'x': 0.02,
+            'xanchor': "left",
+        },
+        margin={'l': 45, 'r': 25, 't': 55, 'b': 45},
+        legend={
+            'font': {'size': 11, 'color': "#263238"},
+            'bgcolor': "rgba(255,255,255,0.8)",
+            'borderwidth': 0,
+        },
+        xaxis={
+            'title_font': {'size': 13, 'color': "#263238"},
+            'tickfont': {'size': 11, 'color': "#64716d"},
+            'showgrid': False,
+            'zeroline': False,
+            'linecolor': "#e5eae8",
+        },
+        yaxis={
+            'title_font': {'size': 13, 'color': "#263238"},
+            'tickfont': {'size': 11, 'color': "#64716d"},
+            'gridcolor': "#edf1ef",
+            'zeroline': False,
+        },
+    )
 
 def create_game_sales_graph(sales_locations_mapping: dict[str, str]) -> html.Div:
 
@@ -15,9 +82,13 @@ def create_game_sales_graph(sales_locations_mapping: dict[str, str]) -> html.Div
                 ],
                 value=list(sales_locations_mapping.values()),
                 multi=True,
-                placeholder='Select sales regions'
+                placeholder='Select sales regions',
+                className='dashboard-dropdown'
             ),
-            dcc.Graph(id='game-sales-graph'),
+            dcc.Graph(
+                id='game-sales-graph',
+                className='tab-graph'
+            ),
         ]
     )
 
@@ -35,7 +106,10 @@ def create_game_sales_scatter(sales_locations_mapping: dict[str, str]) -> html.D
                 multi=True,
                 placeholder='Select sales regions'
             ),
-            dcc.Graph(id='game-sales-scatter'),
+            dcc.Graph(
+                id='game-sales-scatter',
+                className='tab-graph'
+            ),
         ]
     )
 

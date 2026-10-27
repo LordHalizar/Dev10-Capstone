@@ -49,19 +49,18 @@ body {
     max-width: 1100px;
     min-height: 400px;
     margin: 28px auto;
-    padding: 28px;
+    /* padding: 28px; */
     background: #fff;
     border-radius: 6px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .tab-graph {
-    max-width: 1100px;
-    min-height: 400px;
-    margin: 28px auto;
-    padding: 28px;
-    border-radius: 6px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    background: white;
+    border: 1px solid #dce8e4;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* Shared heading style */
@@ -80,4 +79,47 @@ body {
     font-size: 24px;
     font-weight: 600;
     border-radius: 5px;
+}
+
+/* Dropdown control */
+.dashboard-dropdown .Select-control {
+    background-color: #fff;
+    border: 1px solid #dfe7e4;
+    border-radius: 5px;
+    min-height: 40px;
+    box-shadow: none;
+}
+
+/* Selected text and placeholder */
+.dashboard-dropdown .Select-value-label,
+.dashboard-dropdown .Select-placeholder {
+    color: #263238;
+    font-size: 13px;
+}
+
+/* Focused/open control */
+.dashboard-dropdown.is-focused:not(.is-open) > .Select-control {
+    border-color: #24bd88;
+    box-shadow: 0 0 0 2px rgba(36, 189, 136, 0.15);
+}
+
+/* Dropdown menu */
+.dashboard-dropdown .Select-menu-outer {
+    background-color: #fff;
+    border: 1px solid #dfe7e4;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    z-index: 1000;
+}
+
+/* Option hover */
+.dashboard-dropdown .Select-option.is-focused {
+    background-color: #e8f7f1;
+    color: #123047;
+}
+
+/* Selected option */
+.dashboard-dropdown .Select-option.is-selected {
+    background-color: #24bd88;
+    color: #fff;
 }
