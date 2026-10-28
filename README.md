@@ -1,12 +1,20 @@
-# [Project Title]
+# Dev10 Capstone Project by Alexander Crosby
 
-> A data pipeline capstone project exploring **[topic or problem]**.
+> A data pipeline capstone project exploring **video game sales from 1980 to 2015**.
 
 ## Overview
 
-**Problem or opportunity:** [Describe the problem this project addresses and why it matters.]
+**Problems:** 
+1. Analyzing, processing, and loading data to local database.
+2. Creating dashboard visualizations with data from database.
+3. Data upload from local database to cloud server equivalent database.
+4. Containerize all processes to allow automated application of processes above.
 
-**Approach:** [Summarize the data sources, pipeline, analysis, and dashboard.]
+**Approach:**
+1. Adaptive ET (extract & transform) for filtering & shaping data, with TL (transform & load) for data refinement and eventual loading to local database.
+2. SQLAlchemy engine to allow SQL calls to local database & callbacks system & plotly to shape and visualize data into tables & graphs.
+3. SQLExecuteQueryOperator to create assignment tasks and execute containerized snowflake schema followed by reusable/generalized sql query function to grab necessary columns from individual tables. Function then called several times for all necessary database tables.
+4. Docker file structure implemented with dedicated folders for nearly all functionalities. Individual functions then encapsulated and called as DAGs through Airflow.
 
 **Key findings:** [Add the most important findings after completing the analysis.]
 
@@ -22,7 +30,6 @@ List the questions that guide the project (aim for 5–10):
 
 ## Data
 
-Document one or two primary datasets with at least 1,000 records each, plus at least one supplementary dataset. Sources may be CSV or another suitable format, such as Parquet or an API. Avoid unstructured, unprofessional, or controversial datasets.
 
 | Role | Dataset | Format | Approx. records | Source |
 |---|---|---|---:|---|
@@ -31,9 +38,13 @@ Document one or two primary datasets with at least 1,000 records each, plus at l
 
 ### Dataset citations
 
-Cite each dataset in APA style and record when it was accessed.
+#### Video Game Sales with Ratings
+Rush4ratio. (n.d.). Video game sales with ratings [Data set]. Kaggle. https://www.kaggle.com/datasets/rush4ratio/video-game-sales-with-ratings/data
+*Source note: Dataset scraped from Metacritic.*
 
-- [Author or organization]. ([Year]). *[Dataset title]* [Data set]. [Publisher]. [URL]. Accessed [Month Day, Year].
+#### Video Game Sales
+Gregorut. (n.d.). Video game sales [Data set]. Kaggle. https://www.kaggle.com/datasets/gregorut/videogamesales
+*Source note: Dataset scraped from VGChartz.*
 
 ## Data pipeline
 
@@ -60,13 +71,13 @@ The presentation should introduce the project and its key questions, explain the
 
 ## Technologies
 
-| Area | Tools |
-|---|---|
-| Languages and data processing | [Python, Pandas, PySpark, etc.] |
-| Database and storage | [MySQL, PostgreSQL, Snowflake, etc.] |
-| Orchestration | [Airflow, if used] |
-| Visualization | [Dash, Power BI, etc.] |
-| Other | [Additional tools] |
+|              Area             |               Tools               |
+|---                         ---|---                             ---|
+|Languages and data processing  |[Python, Pandas, PySpark, etc.]    |
+|Database and storage           |[PostgreSQL, Snowflake, SQLAlchemy]|
+|Orchestration                  |[Airflow, Docker]                  |
+|Visualization                  |[Dash, Canvas, Plotly]             |
+|Other                          |[Additional tools]                 |
 
 ## Repository contents
 

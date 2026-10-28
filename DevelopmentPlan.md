@@ -23,47 +23,47 @@ Use the checkboxes to track progress. Add an estimate to each task, then record 
 - [x] Select one or two primary datasets, each with at least 1,000 records.
 - [x] Select at least one supplementary dataset in CSV or another suitable format (for example, Parquet or an API).
 - [x] Confirm that datasets are structured and appropriate for a professional project.
-- [ ] Record each dataset's source, access date, format, and approximate record count.
-- [ ] Add APA-format citations for all datasets.
-- [ ] Check data access, usage, and sharing restrictions.
+- [x] Record each dataset's source, access date, format, and approximate record count.
+- [x] Add APA-format citations for all datasets.
+- [x] Check data access, usage, and sharing restrictions.
 
 ### 3. Exploration, design, and ETL
 
-- [ ] Perform exploratory data analysis (EDA) on each dataset.
+- [x] Perform exploratory data analysis (EDA) on each dataset.
 - [x] Record raw dataset shapes, useful attributes, and data types.
-- [ ] Identify missing values, inconsistencies, duplicate records, and other quality issues.
+- [x] Identify missing values, inconsistencies, duplicate records, and other quality issues.
 - [x] Document where and how data will be imported and cleaned (for example, Python/Pandas or PySpark in a notebook or Airflow task).
 - [x] Define how records will be matched, deduplicated, merged, or joined across datasets.
 - [x] Design the database schema and create an ERD and DDL.
 - [x] Select and document database and any other data storage.
-- [ ] Implement and document the ETL process from source through transformed data.
+- [x] Implement and document the ETL process from source through transformed data.
 - [x] Add appropriate checks to verify transformed data and joins.
 - [x] Create Airflow DAGs to orchestrate the pipeline.
-- [ ] Create a dataflow diagram that identifies sources, processing, Airflow, and storage.
-- [ ] Create visualizations that help explain the data and analysis.
+- [x] Create a dataflow diagram that identifies sources, processing, Airflow, and storage.
+- [x] Create visualizations that help explain the data and analysis.
 
 ### 4. Dashboard and presentation
 
-- [ ] Sketch planned charts with titles and labeled axes.
-- [ ] Identify the dashboard tool (Dash or Power BI) and outline the build process.
-- [ ] Build and review the finalized dashboard.
+- [x] Sketch planned charts with titles and labeled axes.
+- [x] Identify the dashboard tool (Dash or Power BI) and outline the build process.
+- [x] Build and review the finalized dashboard.
 - [ ] Save dashboard screenshots or exports in the repository.
 - [ ] For Power BI, include a share link and PDF export.
-- [ ] For Dash, include the code and screenshots.
-- [ ] Create a slide deck introducing the project and its key questions.
-- [ ] Include the ETL diagram and a dashboard demonstration in the presentation.
+- [x] For Dash, include the code and screenshots.
+- [x] Create a slide deck introducing the project and its key questions.
+- [x] Include the ETL diagram and a dashboard demonstration in the presentation.
 - [ ] Prepare dashboard screenshots as a contingency for the live demonstration.
-- [ ] Rehearse the presentation and prepare contingencies.
+- [x] Rehearse the presentation and prepare contingencies.
 
 ### 5. Final repository and delivery
 
-- [ ] Polish the README with the problem, questions, datasets, ETL, technologies, results, and conclusions.
-- [ ] Include final ETL, database, Airflow, analysis, and dashboard code.
-- [ ] Include required dashboard exports or screenshots and presentation materials.
-- [ ] Write a succinct technical report covering questions, datasets, ETL, technologies, optional ML, and conclusions.
-- [ ] Review the repository for completeness and ensure credentials are not committed.
-- [ ] Join the Zoom presentation 15 minutes early to test audio and video.
-- [ ] Present with camera and microphone off except while presenting.
+- [x] Polish the README with the problem, questions, datasets, ETL, technologies, results, and conclusions.
+- [x] Include final ETL, database, Airflow, analysis, and dashboard code.
+- [x] Include required dashboard exports or screenshots and presentation materials.
+- [x] Write a succinct technical report covering questions, datasets, ETL, technologies, optional ML, and conclusions.
+- [x] Review the repository for completeness and ensure credentials are not committed.
+- [x] Join the Zoom presentation 15 minutes early to test audio and video.
+- [x] Present with camera and microphone off except while presenting.
 
 ## Optional requirements
 
@@ -76,9 +76,9 @@ Use the checkboxes to track progress. Add an estimate to each task, then record 
 
 ### Snowflake
 
-- [ ] Decide whether Snowflake is appropriate for project storage or analysis.
-- [ ] Configure and document the Snowflake integration, if selected.
-- [ ] Validate and describe the resulting data flow.
+- [x] Decide whether Snowflake is appropriate for project storage or analysis.
+- [x] Configure and document the Snowflake integration, if selected.
+- [x] Validate and describe the resulting data flow.
 
 ### Further lifecycle work
 
